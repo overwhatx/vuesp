@@ -1,0 +1,100 @@
+{
+  "id": "3439044",
+  "name": "后台项目通用",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "17718107",
+      "name": "竖线",
+      "font_class": "shuxian",
+      "unicode": "e68b",
+      "unicode_decimal": 59019
+    },
+    {
+      "icon_id": "29865172",
+      "name": "购物车",
+      "font_class": "gouwuche",
+      "unicode": "e68a",
+      "unicode_decimal": 59018
+    },
+    {
+      "icon_id": "29865143",
+      "name": "编辑",
+      "font_class": "bianji",
+      "unicode": "e67f",
+      "unicode_decimal": 59007
+    },
+    {
+      "icon_id": "29865153",
+      "name": "订单",
+      "font_class": "dingdan",
+      "unicode": "e680",
+      "unicode_decimal": 59008
+    },
+    {
+      "icon_id": "29865158",
+      "name": "分布式",
+      "font_class": "fenbushi",
+      "unicode": "e681",
+      "unicode_decimal": 59009
+    },
+    {
+      "icon_id": "29865170",
+      "name": "密码",
+      "font_class": "mima",
+      "unicode": "e682",
+      "unicode_decimal": 59010
+    },
+    {
+      "icon_id": "29865184",
+      "name": "删除",
+      "font_class": "shanchu",
+      "unicode": "e683",
+      "unicode_decimal": 59011
+    },
+    {
+      "icon_id": "29865194",
+      "name": "数据",
+      "font_class": "shuju",
+      "unicode": "e684",
+      "unicode_decimal": 59012
+    },
+    {
+      "icon_id": "29865198",
+      "name": "退出",
+      "font_class": "tuichu",
+      "unicode": "e685",
+      "unicode_decimal": 59013
+    },
+    {
+      "icon_id": "29865200",
+      "name": "物流",
+      "font_class": "wuliu",
+      "unicode": "e686",
+      "unicode_decimal": 59014
+    },
+    {
+      "icon_id": "29865205",
+      "name": "用户",
+      "font_class": "yonghu",
+      "unicode": "e687",
+      "unicode_decimal": 59015
+    },
+    {
+      "icon_id": "29865215",
+      "name": "应用管理",
+      "font_class": "yingyongguanli",
+      "unicode": "e688",
+      "unicode_decimal": 59016
+    },
+    {
+      "icon_id": "29865223",
+      "name": "组织架构",
+      "font_class": "zuzhijiagou",
+      "unicode": "e689",
+      "unicode_decimal": 59017
+    }
+  ]
+}
