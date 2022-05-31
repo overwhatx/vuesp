@@ -3,7 +3,9 @@
 </template>
 
 <script>
-export default {}
+export default {
+    name: 'VueProjectWelcome',
+}
 </script>
 
 <style lang="less" scoped></style>

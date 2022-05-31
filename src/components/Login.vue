@@ -80,6 +80,7 @@
 
 <script>
 export default {
+  name:"VueProjectLogin",
   data() {
     return {
       // 登录表单的数据绑定对象
