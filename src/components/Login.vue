@@ -17,14 +17,19 @@
             <p class="form">
               <el-form-item prop="username">
                 <el-input
+                  prefix-icon=" iconfont  icon-yonghu"
+                  clearable
                   v-model="loginForm.username"
                   placeholder="请输入用户名"
-                ></el-input>
+                >
+                </el-input>
               </el-form-item>
             </p>
             <p class="form">
               <el-form-item prop="password">
                 <el-input
+                  prefix-icon=" iconfont  icon-mima"
+                  clearable
                   v-model="loginForm.password"
                   placeholder="请输入密码"
                   type="password"

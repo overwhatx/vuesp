@@ -14,17 +14,27 @@
           <i class="iconfont icon-shuxian"></i>
           <i class="el-icon-arrow-right"></i>
         </div>
+
+        <!-- 
+            active-text-color	当前激活菜单的文字颜色
+            default-active	当前激活菜单的 index
+            unique-opened	是否只保持一个子菜单的展开
+            collapse	是否水平折叠收起菜单（仅在 mode 为 vertical 时可用）
+            collapse-transition	是否开启折叠动画
+            default-active	当前激活菜单的 index
+            router	是否使用 vue-router 的模式，启用该模式会在激活导航时以 index 作为 path 进行路由跳转
+         -->
         <el-menu
           background-color="#01081f"
           text-color="#fff"
           active-text-color="#3d7eff"
           unique-opened
           :collapse="menucollapsetf"
-          :collapse-transition="false"
+          collapse-transition
           router
           :default-active="activePath"
         >
-          <!-- 一及导航 -->
+          <!-- 一级导航 -->
           <!-- 需要唯一的index值否则会导致联动 只接收字符串所以拼接 -->
           <el-submenu
             :index="item.id + ''"
@@ -41,8 +51,8 @@
               :index="'/' + itemchild.path"
               v-for="itemchild in item.children"
               :key="itemchild.id"
-              @click="menuColor('/' + itemchild.path)"
             >
+            <!-- @click="menuColor('/' + itemchild.path)" -->
               <template slot="title">
                 <i class="el-icon-menu"></i>
                 <span>{{ itemchild.authName }}</span>
@@ -73,7 +83,7 @@ export default {
         102: 'iconfont icon-dingdan',
         145: 'iconfont icon-shuju',
       },
-    //   侧边栏是否折叠默认不折叠
+      //   侧边栏是否折叠默认不折叠
       menucollapsetf: false,
       activePath: '',
     }
@@ -82,7 +92,7 @@ export default {
     //生命周期
     this.getMenuList()
     // 创建的时候就调用获取到 path值
-    this.activePath = window.sessionStorage.getItem('activePath')
+    // this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
     quit() {
@@ -122,9 +132,17 @@ export default {
       this.menucollapsetf = !this.menucollapsetf
     },
     // 点击按钮的时候 保存当前url 获取到path值 并进行赋值
-    menuColor(activePath) {
-      window.sessionStorage.setItem('activePath', activePath)
-      this.activePath = activePath
+    // menuColor() {
+      //   window.sessionStorage.setItem('activePath', activePath)
+      //   this.activePath = activePath
+      //   this.activePath = window.location.hash.slice(1)
+      //   console.log(window.location.hash)
+    // },
+  },
+  watch: {
+    $route(to, from) {
+      console.log(to.path, from)
+      this.activePath = to.path
     },
   },
 }
@@ -177,6 +195,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-around;
+
   .iconfont {
     font-size: 20px;
     margin: 0;
@@ -185,5 +204,9 @@ export default {
 }
 .toggle_button.flag:hover {
   color: #3d7eff;
+}
+.el-aside {
+  transition: all 1s;
+  overflow: visible;
 }
 </style>

@@ -4,6 +4,12 @@ import Login from '../components/Login.vue'
 import Home from '../components/Home.vue'
 import Welcome from '../components/Welcome.vue'
 import Users from '../components/user/Users.vue'
+import Roles from '../components/power/Roles.vue'
+import Rights from '../components/power/Rights.vue'
+import Goods from '../components/goods/Goods.vue'
+import Categories from '../components/goods/Categories.vue'
+import Params from '../components/goods/Params.vue'
+import Orders from '../components/order/Orders.vue'
 
 Vue.use(VueRouter)
 
@@ -20,9 +26,42 @@ const router = new VueRouter({
       path: '/home',
       component: Home,
       redirect: '/welcome',
-      children: [
-        {path:'/welcome',component:Welcome},
-        {path:'/users',component:Users},
+      children: [{
+          path: '/welcome',
+          component: Welcome
+        },
+        {
+          path: '/users',
+          component: Users
+        },
+        // 权限管理
+        {
+          path: '/roles',
+          component: Roles
+        },
+        {
+          path: '/rights',
+          component: Rights
+        },
+        // 商品管理
+        {
+          path: '/goods',
+          component: Goods
+        },
+        {
+          path: '/categories',
+          component: Categories
+        },
+        {
+          path: '/params',
+          component: Params
+        },
+        // 订单管理
+        {
+          path: '/orders',
+          component: Orders
+        },
+      
       ]
     }
   ]
