@@ -52,7 +52,7 @@
               v-for="itemchild in item.children"
               :key="itemchild.id"
             >
-            <!-- @click="menuColor('/' + itemchild.path)" -->
+              <!-- @click="menuColor('/' + itemchild.path)" -->
               <template slot="title">
                 <i class="el-icon-menu"></i>
                 <span>{{ itemchild.authName }}</span>
@@ -73,7 +73,7 @@
 
 <script>
 export default {
-    name:"VueProjectHome",
+  name: 'VueProjectHome',
   data() {
     return {
       menulist: [],
@@ -122,11 +122,11 @@ export default {
     // 获取所有侧边栏菜单
     async getMenuList() {
       const { data: res } = await this.$http.get('menus')
-      console.log(res)
+      // console.log(res)
       //   如果状态不等于200 表示错误 返回后台给的错误提示
       if (res.meta.status !== 200) return this.$message.err(res.meta.msg)
       this.menulist = res.data
-      console.log(this.menulist)
+      // console.log(this.menulist)
     },
     // 点击按钮切换侧边栏状态
     menucollapse() {
@@ -134,10 +134,10 @@ export default {
     },
     // 点击按钮的时候 保存当前url 获取到path值 并进行赋值
     // menuColor() {
-      //   window.sessionStorage.setItem('activePath', activePath)
-      //   this.activePath = activePath
-      //   this.activePath = window.location.hash.slice(1)
-      //   console.log(window.location.hash)
+    //   window.sessionStorage.setItem('activePath', activePath)
+    //   this.activePath = activePath
+    //   this.activePath = window.location.hash.slice(1)
+    //   console.log(window.location.hash)
     // },
   },
   watch: {
