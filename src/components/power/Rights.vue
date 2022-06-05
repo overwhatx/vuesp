@@ -16,7 +16,8 @@
         border
         element-loading-text="拼命加载中"
         style="width: 100%"
-      >
+      > 
+     
         <el-table-column label="#" type="index"> </el-table-column>
         <el-table-column label="权限说明" prop="authName"> </el-table-column>
         <el-table-column label="权限父 ID" prop="pid"> </el-table-column>

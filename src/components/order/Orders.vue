@@ -1,29 +1,188 @@
 <template>
-    <div>
-        add
-    </div>
+  <div>
+    <!-- 面包屑导航 -->
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>订单管理</el-breadcrumb-item>
+      <el-breadcrumb-item>订单列表</el-breadcrumb-item>
+    </el-breadcrumb>
+
+    <!-- 卡片 -->
+    <el-card class="box-card">
+      <!-- 搜索和添加用户 -->
+      <el-row :gutter="20">
+        <el-col :span="6">
+          <div>
+            <el-input
+              placeholder="请输入内容"
+              class="input-with-select"
+              v-model="queryInfo.query"
+              clearable
+              @clear="getUserList"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="getUserList"
+              ></el-button>
+            </el-input>
+          </div>
+        </el-col>
+      </el-row>
+
+      <!--  用户列表-->
+      <!--  v-loading="!userList.length" -->
+      <el-table
+        :data="userList"
+        :stripe="true"
+        border
+        element-loading-text="拼命加载中"
+        style="width: 100%"
+      >
+        <el-table-column label="#" type="index"> </el-table-column>
+        <el-table-column label="用户 ID" prop="user_id"> </el-table-column>
+        <el-table-column label="支付状态" prop="pay_status"> </el-table-column>
+        <el-table-column label="是否发货" prop="is_send"> </el-table-column>
+        <el-table-column label="['个人','公司']" prop="order_fapiao_title">
+        </el-table-column>
+        <el-table-column label="公司名称" prop="order_fapiao_company">
+        </el-table-column>
+        <el-table-column label="发票内容" prop="order_fapiao_content">
+        </el-table-column>
+        <el-table-column label="发货地址" prop="consignee_addr">
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <!-- 修改按钮 -->
+            <!-- el-tooltip 标签进行悬停提示 -->
+            <el-tooltip
+              :enterable="false"
+              class="item"
+              content="修改用户"
+              effect="dark"
+              placement="top"
+            >
+              <el-button
+                icon="iconfont icon-bianji"
+                size="mini"
+                type="primary"
+                @click="PutUserFrame(scope.row.id)"
+              ></el-button>
+            </el-tooltip>
+
+            <!-- 删除按钮-->
+            <el-tooltip
+              :enterable="false"
+              class="item"
+              content="删除用户"
+              effect="dark"
+              placement="top"
+            >
+              <el-button
+                icon="iconfont icon-shanchu"
+                size="mini"
+                type="danger"
+                @click="DeleteUser(scope.row.id)"
+              ></el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!--分页-->
+      <el-pagination
+        :current-page="queryInfo.pagenum"
+        :page-size="this.queryInfo.pagesize"
+        :page-sizes="[2, 4, 5, 10]"
+        :total="total"
+        layout="total, sizes, prev, pager, next, jumper"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      >
+      </el-pagination>
+    </el-card>
+  </div>
 </template>
 
 <script>
 export default {
-    name: 'VueProjectAdd',
-
-    data() {
-        return {
-            
-        };
+  name: 'VueProjectGoods',
+  data() {
+    return {
+      // 获取用户列表的参数对象
+      queryInfo: {
+        query: '',
+        // 当前的页数
+        pagenum: 1,
+        pagesize: 5,
+      },
+      userList: [],
+      // 用户总数据条数
+      total: 0,
+    }
+  },
+  created() {
+    this.getUserList()
+  },
+  methods: {
+    //   获取用户数据
+    async getUserList() {
+      this.loading = true
+      const { data: res } = await this.$http.get('orders', {
+        params: this.queryInfo,
+      })
+      console.log(res.data)
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取用户列表失败!')
+      }
+      this.userList = res.data.goods
+      this.total = res.data.total
+      this.loading = false
+    },
+    // size-change	pageSize 改变时会触发
+    handleSizeChange(newSize) {
+      //   改变每页条数
+      this.queryInfo.pagesize = newSize
+      this.getUserList()
+    },
+    // currentPage 改变时会触发	当前页
+    handleCurrentChange(newPage) {
+      // 改变当前位于页
+      this.queryInfo.pagenum = newPage
+      this.getUserList()
     },
 
-    mounted() {
-        
+    editFormClear() {
+      // 将关闭后的表单清空
+      this.$refs.editRef.resetFields()
     },
 
-    methods: {
-        
+    // 删除
+    async DeleteUser(id) {
+      const delyn = await this.$confirm('是否删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).catch((err) => err)
+
+      if (delyn !== 'confirm') {
+        return this.$message.info('已取消删除')
+      } else {
+        const { data: res } = await this.$http.delete('users/' + id)
+        if (res.meta.status !== 200) return this.$message.error('删除失败')
+        this.getUserList()
+        this.$message.success('已删除')
+      }
     },
-};
+  },
+}
 </script>
 
-<style lang="scss" scoped>
-
+<style lang="less" scoped>
+.el-table {
+  margin-top: 15px;
+}
+.el-pagination {
+  margin-top: 15px;
+}
 </style>

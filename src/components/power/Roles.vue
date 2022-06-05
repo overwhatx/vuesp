@@ -21,6 +21,59 @@
         element-loading-text="拼命加载中"
         style="width: 100%"
       >
+        <el-table-column type="expand">
+          <!--作用域插槽-->
+          <template slot-scope="scope">
+            <!--<pre>元素表示预先格式化的文本，该文本将完全按照 HTML 文件中所写的方式呈现-->
+            <!--<pre>-->
+            <!--{{ scope.row }}-->
+            <!--</pre>-->
+            <el-row
+              v-for="(item, i1) in scope.row.children"
+              :key="item.id"
+              :class="['bd-bottom', i1 === 0 ? 'bd-top' : '', 'vcenter']"
+            >
+              <!--渲染一级权限-->
+              <el-col :span="5">
+                <el-tag closable @close="removeRightById(scope.row, item.id)">
+                  {{ item.authName }}
+                </el-tag>
+                <i class="el-icon-caret-right"></i>
+              </el-col>
+              <!--渲染二级和三级权限-->
+              <el-col :span="19">
+                <!--  通过for循环, 嵌套渲染二级权限 -->
+                <el-row
+                  v-for="(subItem, i2) in item.children"
+                  :key="subItem.id"
+                  :class="[i2 === 0 ? '' : 'bd-top', 'vcenter']"
+                >
+                  <el-col :span="6">
+                    <el-tag
+                      closable
+                      type="success"
+                      @close="removeRightById(scope.row, subItem.id)"
+                    >
+                      {{ subItem.authName }}
+                    </el-tag>
+                    <i class="el-icon-caret-right"></i>
+                  </el-col>
+                  <el-col :span="18">
+                    <el-tag
+                      v-for="item3 in subItem.children"
+                      :key="item3.id"
+                      closable
+                      type="warning"
+                      @close="removeRightById(scope.row, item3.id)"
+                    >
+                      {{ item3.authName }}
+                    </el-tag>
+                  </el-col>
+                </el-row>
+              </el-col>
+            </el-row>
+          </template>
+        </el-table-column>
         <el-table-column label="#" type="index"> </el-table-column>
         <el-table-column label="角色名称" prop="roleName"> </el-table-column>
         <el-table-column label="角色描述" prop="roleDesc"> </el-table-column>
@@ -74,6 +127,7 @@
                 icon="iconfont icon-zuzhijiagou"
                 size="mini"
                 type="warning"
+                @click="showRight(scope.row)"
               ></el-button>
             </el-tooltip>
           </template>
@@ -129,6 +183,33 @@
         <el-button type="primary" @click="editRole">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!--权限管理  -->
+    <el-dialog
+      title="权限管理"
+      :visible.sync="showJurisdiction"
+      width="30%"
+      @close="closeRight"
+    >
+      <!-- 树形组件  -->
+      <!-- :data="showList 数据源 -->
+      <!-- :props="treeProps" 数据结构 -->
+      <!-- show-checkbox 选框  node-key 唯一标识  default-expand-all 展开所有节点-->
+      <el-tree
+        :data="showList"
+        :props="treeProps"
+        show-checkbox
+        node-key="id"
+        default-expand-all
+        :default-checked-keys="defKeys"
+        ref="treeRef"
+      ></el-tree>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showJurisdiction = false">取 消</el-button>
+        <el-button type="primary" @click="allRight">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -168,6 +249,19 @@ export default {
       editDialogVisible: false,
       //  修改的值 接收通过id判断是否存在的的数据
       editForm: {},
+      // 控制权限管理的对话框
+      showJurisdiction: false,
+      // 接收所有权限树形列表
+      showList: [],
+      // 树形列表的数据配置
+      treeProps: {
+        children: 'children', //以什么作为嵌套
+        label: 'authName', //展示的数据
+      },
+      // 已有的权限
+      defKeys: [],
+      // 当前行的id
+      roleId: '',
     }
   },
   created() {
@@ -207,7 +301,7 @@ export default {
     addFormClear() {
       this.$refs.AddFormRef.resetFields()
     },
-    // 更具id查询当前数据是否存在 并进行赋值 渲染到修改的表单
+    // 根据id查询当前数据是否存在 并进行赋值 渲染到修改的表单
     async editRolesData(id) {
       this.editDialogVisible = true
       const { data: res } = await this.$http.get('roles/' + id)
@@ -255,6 +349,81 @@ export default {
         this.getRoles()
       }
     },
+    // 根据id 删除权限
+    async removeRightById(role, rightId) {
+      const result = await this.$confirm('删除当前权限, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).catch((err) => err)
+      if (result !== 'confirm') {
+        return this.$message.error('取消删除')
+      }
+      const { data: res } = await this.$http.delete(
+        `roles/${role.id}/rights/${rightId}`
+      )
+
+      if (res.meta.status !== 200) return this.$message.error('删除权限失败')
+      this.$message.success('删除权限成功')
+      // 删除成功后重新渲染 会导致整个页面的刷新 并关闭操作
+      // this.getRoles()
+      // 通过接口 当删除后会返回最新的权限 所以直接将新的权限进行渲染
+      role.children = res.data
+    },
+    // 权限设置
+    async showRight(role) {
+      // 获取当前点击的 id
+      this.roleId = role.id
+      // 获取到所有权限 并赋值
+      const { data: res } = await this.$http.get('rights/tree')
+      if (res.meta.status != 200) return this.$message.error('获取权限失败')
+      // 获取权限成功 进行赋值
+      this.showList = res.data
+      console.log(this.showList)
+
+      // 递归获取三级节点的id
+      this.getRight(role, this.defKeys)
+
+      this.showJurisdiction = true
+    },
+    // 获取当前角色的所有权限
+    getRight(node, arr) {
+      // 只获取三级节点的 id 底部的选中了 顶部的会自动勾选
+      // 判断当前 node节点中 不包含 children 属性 既为三级节点
+      if (!node.children) return arr.push(node.id)
+      node.children.forEach((item) => {
+        this.getRight(item, arr)
+      })
+    },
+    // 监听 权限分配的关闭 清除上一次留下的数据
+    closeRight() {
+      this.defKeys = []
+    },
+    // 确认权限
+    async allRight() {
+      const keys = [
+        // 返回目前被选中的节点的 key 所组成的数组
+        ...this.$refs.treeRef.getCheckedKeys(),
+        // 返回目前半选中的节点所组成的数组
+        ...this.$refs.treeRef.getHalfCheckedKeys(),
+      ]
+      console.log(keys)
+      const strKeys = keys.join(',')
+      console.log(strKeys)
+
+      const { data: res } = await this.$http.post(
+        `roles/${this.roleId}/rights`,
+        {
+          rids: strKeys,
+        }
+      )
+      if (res.meta.status != 200) return this.$message.error('分配权限失败')
+      this.$message.success('分配权限成功')
+      // 重新渲染
+      this.getRoles()
+      //  关闭对话框
+      this.showJurisdiction = false
+    },
   },
 }
 </script>
@@ -262,5 +431,18 @@ export default {
 <style lang="less" scoped>
 .topadd {
   margin-bottom: 15px;
+}
+.bd-top {
+  border-top: 1px solid #eeeeee;
+}
+.bd-bottom {
+  border-bottom: 1px solid #eeeeee;
+}
+.el-tag {
+  margin: 10px;
+}
+.vcenter {
+  display: flex;
+  align-items: center;
 }
 </style>
